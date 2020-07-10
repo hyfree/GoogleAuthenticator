@@ -1,4 +1,5 @@
 ﻿using QRCoder;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,6 +19,7 @@ namespace Google.Authenticator
     public class TwoFactorAuthenticator
     {
         private readonly static DateTime _epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
         private TimeSpan DefaultClockDriftTolerance { get; set; }
 
         public TwoFactorAuthenticator()
@@ -40,6 +42,18 @@ namespace Google.Authenticator
             return GenerateSetupCode(issuer, accountTitleNoSpaces, key, QRPixelsPerModule);
         }
 
+        public SetupCode GenerateSetupCode(string issuer, string accountTitleNoSpaces, string accountSecretKey, bool secretIsBase32, int QRPixelsPerModule, bool generateQrCode)
+        {
+            byte[] key = secretIsBase32 ? Base32Encoding.ToBytes(accountSecretKey) : Encoding.UTF8.GetBytes(accountSecretKey);
+            return GenerateSetupCode(issuer, accountTitleNoSpaces, key, QRPixelsPerModule, generateQrCode);
+        }
+
+        public SetupCode GenerateSetupCodeImage(string issuer, string accountTitleNoSpaces, string accountSecretKey, bool secretIsBase32, int QRPixelsPerModule, bool generateQrCode)
+        {
+            byte[] key = secretIsBase32 ? Base32Encoding.ToBytes(accountSecretKey) : Encoding.UTF8.GetBytes(accountSecretKey);
+            return GenerateSetupCode(issuer, accountTitleNoSpaces, key, QRPixelsPerModule, generateQrCode);
+        }
+
         /// <summary>
         /// Generate a setup code for a Google Authenticator user to scan
         /// </summary>
@@ -47,6 +61,7 @@ namespace Google.Authenticator
         /// <param name="accountTitleNoSpaces">Account Title (no spaces)</param>
         /// <param name="accountSecretKey">Account Secret Key as byte[]</param>
         /// <param name="QRPixelsPerModule">Number of pixels per QR Module (2 = ~120x120px QRCode)</param>
+        /// <param name="generateQrCode">true=base64Image,false=otpauth://totp/{0}?secret={1}</param>
         /// <returns>SetupCode object</returns>
         public SetupCode GenerateSetupCode(string issuer, string accountTitleNoSpaces, byte[] accountSecretKey, int QRPixelsPerModule, bool generateQrCode = true)
         {
@@ -79,8 +94,45 @@ namespace Google.Authenticator
                     qrCodeUrl = String.Format("data:image/png;base64,{0}", Convert.ToBase64String(ms.ToArray()));
                 }
             }
+            else
+            {
+                qrCodeUrl = provisionUrl;
+
+            }
 
             return new SetupCode(accountTitleNoSpaces, encodedSecretKey.Trim('='), qrCodeUrl);
+        }
+
+        public byte[] GenerateSetupCodeImage(string issuer, string accountTitleNoSpaces, byte[] accountSecretKey, int QRPixelsPerModule)
+        {
+            if (String.IsNullOrWhiteSpace(accountTitleNoSpaces)) { throw new NullReferenceException("Account Title is null"); }
+            accountTitleNoSpaces = RemoveWhitespace(Uri.EscapeUriString(accountTitleNoSpaces));
+            string encodedSecretKey = Base32Encoding.ToString(accountSecretKey);
+            string provisionUrl;
+            if (String.IsNullOrWhiteSpace(issuer))
+            {
+                provisionUrl = String.Format("otpauth://totp/{0}?secret={1}", accountTitleNoSpaces, encodedSecretKey.Trim('='));
+            }
+            else
+            {
+                //  https://github.com/google/google-authenticator/wiki/Conflicting-Accounts
+                // Added additional prefix to account otpauth://totp/Company:joe_example@gmail.com for backwards compatibility
+                provisionUrl = String.Format("otpauth://totp/{2}:{0}?secret={1}&issuer={2}", accountTitleNoSpaces, encodedSecretKey.Trim('='), UrlEncode(issuer));
+            }
+
+            string qrCodeUrl = string.Empty;
+            byte[] byteArray=null;
+            using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+            using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(provisionUrl, QRCodeGenerator.ECCLevel.Q))
+            using (QRCode qrCode = new QRCode(qrCodeData))
+            using (Bitmap qrCodeImage = qrCode.GetGraphic(QRPixelsPerModule))
+            using (MemoryStream ms = new MemoryStream())
+            {
+                qrCodeImage.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                byteArray = ms.ToArray();
+            }
+
+            return byteArray;
         }
 
         private static string RemoveWhitespace(string str)
@@ -129,7 +181,7 @@ namespace Google.Authenticator
             }
 
             HMACSHA1 hmac = new HMACSHA1(key);
-                        
+
             byte[] hash = hmac.ComputeHash(counter);
 
             int offset = hash[hash.Length - 1] & 0xf;
@@ -154,7 +206,7 @@ namespace Google.Authenticator
         {
             return (long)(now - epoch).TotalSeconds / timeStep;
         }
-                
+
         public bool ValidateTwoFactorPIN(string accountSecretKey, string twoFactorCodeFromClient)
         {
             return ValidateTwoFactorPIN(accountSecretKey, twoFactorCodeFromClient, DefaultClockDriftTolerance);
@@ -170,10 +222,10 @@ namespace Google.Authenticator
         {
             return GeneratePINAtInterval(accountSecretKey, GetCurrentCounter());
         }
-        
-         public string GetCurrentPIN(string accountSecretKey,DateTime now)
+
+        public string GetCurrentPIN(string accountSecretKey, DateTime now)
         {
-            return GeneratePINAtInterval(accountSecretKey, GetCurrentCounter(now,_epoch,30));
+            return GeneratePINAtInterval(accountSecretKey, GetCurrentCounter(now, _epoch, 30));
         }
 
         public string[] GetCurrentPINs(string accountSecretKey)
