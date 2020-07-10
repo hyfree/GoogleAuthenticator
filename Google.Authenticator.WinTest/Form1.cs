@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Google.Authenticator.WinTest
@@ -54,7 +47,6 @@ namespace Google.Authenticator.WinTest
 
         private void btnDebugTest_Click(object sender, EventArgs e)
         {
-
         }
     }
 }

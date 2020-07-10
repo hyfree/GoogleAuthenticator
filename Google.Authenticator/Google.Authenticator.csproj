@@ -5,12 +5,12 @@
     <Product>Google Authenticator Two-Factor</Product>
     <Title>Google Authenticator Two-Factor Authentication Library</Title>
     <Description>Google Authenticator Two-Factor Authentication Library (Not officially affiliated with Google.)</Description>
-    <Authors>Brandon Potter</Authors>
-    <Company>Brandon Potter</Company>
-    <Version>2.0.1</Version>
+    <Authors>hyfree</Authors>
+    <Company>hyfree</Company>
+    <Version>2.0.3</Version>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/BrandonPotter/GoogleAuthenticator</PackageProjectUrl>
-    <PackageId>GoogleAuthenticator</PackageId>
+    <PackageProjectUrl>https://github.com/hyfree/GoogleAuthenticator</PackageProjectUrl>
+    <PackageId>github.hyfree.GoogleAuthenticator</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
@@ -35,6 +35,6 @@
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
     </AllowedOutputExtensionsInPackageBuildOutputFolder>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <AssemblyVersion>2.0.3.0</AssemblyVersion>
   </PropertyGroup>
 </Project>

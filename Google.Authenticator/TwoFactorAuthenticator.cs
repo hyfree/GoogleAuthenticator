@@ -97,7 +97,6 @@ namespace Google.Authenticator
             else
             {
                 qrCodeUrl = provisionUrl;
-
             }
 
             return new SetupCode(accountTitleNoSpaces, encodedSecretKey.Trim('='), qrCodeUrl);
@@ -121,7 +120,7 @@ namespace Google.Authenticator
             }
 
             string qrCodeUrl = string.Empty;
-            byte[] byteArray=null;
+            byte[] byteArray = null;
             using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
             using (QRCodeData qrCodeData = qrGenerator.CreateQrCode(provisionUrl, QRCodeGenerator.ECCLevel.Q))
             using (QRCode qrCode = new QRCode(qrCodeData))

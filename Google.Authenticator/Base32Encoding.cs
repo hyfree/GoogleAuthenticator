@@ -108,11 +108,13 @@ namespace Google.Authenticator
             {
                 return value - 65;
             }
+
             //50-55 == numbers 2-7
             if (value < 56 && value > 49)
             {
                 return value - 24;
             }
+
             //97-122 == lowercase letters
             if (value < 123 && value > 96)
             {
@@ -136,6 +138,5 @@ namespace Google.Authenticator
 
             throw new ArgumentException("Byte is not a value Base32 value.", "b");
         }
-
     }
 }
