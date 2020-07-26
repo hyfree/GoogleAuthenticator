@@ -101,7 +101,11 @@ namespace Google.Authenticator
 
             return new SetupCode(accountTitleNoSpaces, encodedSecretKey.Trim('='), qrCodeUrl);
         }
-
+        public byte[] GenerateSetupCodeImage(string issuer, string accountTitleNoSpaces, string accountSecretKey, bool secretIsBase32, int QRPixelsPerModule)
+        {
+            byte[] key = secretIsBase32 ? Base32Encoding.ToBytes(accountSecretKey) : Encoding.UTF8.GetBytes(accountSecretKey);
+            return GenerateSetupCodeImage(issuer, accountTitleNoSpaces, key, QRPixelsPerModule);
+        }
         public byte[] GenerateSetupCodeImage(string issuer, string accountTitleNoSpaces, byte[] accountSecretKey, int QRPixelsPerModule)
         {
             if (String.IsNullOrWhiteSpace(accountTitleNoSpaces)) { throw new NullReferenceException("Account Title is null"); }

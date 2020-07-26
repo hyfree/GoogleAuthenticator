@@ -7,7 +7,7 @@
     <Description>Google Authenticator Two-Factor Authentication Library (Not officially affiliated with Google.)</Description>
     <Authors>hyfree</Authors>
     <Company>hyfree</Company>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/hyfree/GoogleAuthenticator</PackageProjectUrl>
     <PackageId>github.hyfree.GoogleAuthenticator</PackageId>
@@ -35,6 +35,6 @@
       $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb
     </AllowedOutputExtensionsInPackageBuildOutputFolder>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
   </PropertyGroup>
 </Project>
